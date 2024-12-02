@@ -11,5 +11,6 @@ def solve(input):
         .apply(sum)
     )
 
+
 with print_duration():
     print("solution:", solve(read("input.txt")))

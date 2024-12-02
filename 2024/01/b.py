@@ -2,7 +2,6 @@ from utils import *
 
 
 def solve(input):
-
     left, right = (
         split(input, "\n", "   ")
         .unzip()
