@@ -512,6 +512,35 @@ class Iterator(BaseIterator[T]):
             return default
         return min(self) if key is None else min(self, key=key)
 
+    def mins(self, key=None):
+        """
+        Filters self to only values equal to the minimum value
+
+        Consumes the entire iterator, materializing len(return) at a time.
+        """
+        if not self.has_next():
+            return List()
+
+        if key is None:
+            mins = List([self.next()])
+            mink = mins[0]
+            for item in self:
+                if item < mink:
+                    mink = item
+                    mins = List([item])
+                elif item == mink:
+                    mins.append(item)
+        else:
+            mins = List([self.next()])
+            mink = key(mins[0])
+            for item, itemk in self.map_to_pairs(key):
+                if itemk < mink:
+                    mink = itemk
+                    mins = List([item])
+                elif itemk == mink:
+                    mins.append(item)
+        return mins
+
     def min_max(self, key=None, default=Unset):
         if not self.has_next():
             if default is Unset:
@@ -1967,3 +1996,47 @@ def dataclass(
     if cls is None:
         return wrap
     return wrap(cls)
+
+
+class Primes:
+    def __init__(self):
+        self.list = List([2])
+        self.set = Set([2])
+        self.checked = 2
+
+    def __iter__(self):
+        return Iterator(count()).filter(self.is_prime)
+
+    def check(self, n):
+        self.checked = n
+        stop = sqrt(n)
+        for prime in self.list:
+            if prime > stop:
+                self.list.append(n)
+                self.set.add(n)
+                break
+            if not n % prime:
+                break
+
+    def is_prime(self, n):
+        for i in range(self.checked + 1, n + 1):
+            self.check(i)
+        return n in self.set
+
+    @cache
+    def factors(self, n):
+        factors = List()
+        if n == 1:
+            return factors
+        while True:
+            if self.is_prime(n):
+                return factors + [n]
+            for prime in self.list:
+                d, m = divmod(n, prime)
+                if not m:
+                    factors.append(prime)
+                    n = d
+                    break
+
+
+primes = Primes()
