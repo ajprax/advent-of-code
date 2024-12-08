@@ -8,30 +8,6 @@ def find_start(map):
                 return x, y, c
 
 
-def turn(direction):
-    match direction:
-        case "^":
-            return ">"
-        case ">":
-            return "v"
-        case "v":
-            return "<"
-        case "<":
-            return "^"
-
-
-def step(x, y, direction):
-    match direction:
-        case "^":
-            return x, y - 1
-        case ">":
-            return x + 1, y
-        case "v":
-            return x, y + 1
-        case "<":
-            return x - 1, y
-
-
 def solve(input):
     map = split(input, "\n", "")
     h = len(map)
@@ -40,11 +16,11 @@ def solve(input):
 
     visited = {(x, y)}
     while True:
-        nx, ny = step(x, y, direction)
+        nx, ny = take_step(x, y, direction, "^<v>")
         if nx < 0 or nx >= w or ny < 0 or ny >= h:
             return len(visited)
         if map[ny][nx] == "#":
-            direction = turn(direction)
+            direction = turn_right(direction, "^<v>")
         else:
             x, y = nx, ny
             visited.add((x, y))
