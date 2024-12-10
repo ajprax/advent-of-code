@@ -2040,3 +2040,8 @@ class Primes:
 
 
 primes = Primes()
+
+
+def indices(m):
+    h, w = hw(m)
+    return Range(w).product(Range(h))
